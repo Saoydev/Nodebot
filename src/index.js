@@ -146,17 +146,17 @@ app.post('/roblox/:token', async (req, res) => {
 
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`\x1b[38;2;255;183;216m\x1b[1mServer running on port ${PORT}\x1b[0m`));
 
 
 process.on('unhandledRejection', async (reason, promise) => {
-    console.log('Unhandled Rejection at:', reason, 'reason:', reason);
+    console.log('\x1b[31mUnhandled Rejection at:\x1b[0m', reason, 'reason:', reason);
 });
 process.on('uncaughtException', (err) => {
-    console.log('Unhandled Exception:', err);
+    console.log('\x1b[31mUnhandled Exception:\x1b[0m', err);
 });
 process.on('uncaughtExceptionMonitor', (err, origin) => {
-    console.log('Unhandled Exception Monitor: ', err, origin);
+    console.log('\x1b[31mUnhandled Exception Monitor: \x1b[0m', err, origin);
 });
 
 const functions = fs.readdirSync("./src/functions").filter(file => file.endsWith(".js"));
