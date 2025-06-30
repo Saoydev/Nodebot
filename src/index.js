@@ -23,14 +23,12 @@ client.on(Events.ClientReady, () => {
     }, 5000);
 });
 
-// Cooldown set per channel (can also be per user if needed)
 const cooldowns = new Map();
 const COOLDOWN_TIME = 10 * 1000;
 
 client.on(Events.MessageCreate, async (message) => {
     if (message.author.bot) return;
 
-    // Prevent replies in announcement/news channels
     if (message.channel.type === ChannelType.GuildAnnouncement) return;
 
     if (message.mentions.has(client.user)) {
@@ -112,11 +110,9 @@ app.post('/roblox/:token', async (req, res) => {
   if (!data) return res.status(403).json({ error: 'Invalid token' });
   if (!data.enabled) return res.status(403).send('Integration disabled');
 
-  // Fetch Discord channel
   const channel = await client.channels.fetch(data.channelId).catch(() => null);
   if (!channel) return res.status(404).send('Discord channel not found');
 
-  // Fetch Roblox userId from username
   let robloxUserId = null;
   try {
     const response = await fetch('https://users.roblox.com/v1/usernames/users', {
@@ -133,7 +129,6 @@ app.post('/roblox/:token', async (req, res) => {
     console.warn('Failed to get Roblox userId:', err);
   }
 
-  // Filter the message text
   const cleanMessage = filterBadWords(message);
 
   await channel.send({
@@ -171,3 +166,4 @@ const commandFolders = fs.readdirSync("./src/commands");
     client.handleCommands(commandFolders, "./src/commands");
     client.login(process.env.token)
 })();
+

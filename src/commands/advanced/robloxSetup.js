@@ -20,10 +20,8 @@ module.exports = {
     const channel = interaction.options.getChannel('channel');
     const enabled = interaction.options.getBoolean('enabled');
 
-    // Try to find existing integration
     let data = await Integration.findOne({ guildId });
 
-    // Only generate a new token if one doesn't already exist
     if (data) {
       data.channelId = channel.id;
       data.enabled = enabled;
@@ -39,7 +37,7 @@ module.exports = {
 
     await data.save();
 
-    const apiUrl = `https://yourdomain.com/roblox/${data.token}`;
+    const apiUrl = `https://local:3000/roblox/${data.token}`;
 
     const description = enabled
       ? `✅ The integration is **enabled**.
