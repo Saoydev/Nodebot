@@ -27,12 +27,25 @@ module.exports = async (app) => {
   try {
     const channel = await client.channels.fetch('1389492586665869404');
     if (channel && channel.send) {
+      // Send "Restarted" message first (orange)
+      if (registered.length > 0) {
+        await channel.send({
+          embeds: [{
+            title: '🟠 API Endpoints Restarted',
+            description: registered.map(r => `• \`${r}\``).join('\n'),
+            color: 0xFFA500, // orange
+            timestamp: new Date()
+          }]
+        });
+      }
+
+      // Then send "Registered" message (green)
       if (registered.length > 0) {
         await channel.send({
           embeds: [{
             title: '🟢 API Endpoints Registered',
             description: registered.map(r => `• \`${r}\``).join('\n'),
-            color: 0x57f287,
+            color: 0x57f287, // green
             timestamp: new Date()
           }]
         });
