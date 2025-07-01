@@ -34,7 +34,11 @@ client.on(Events.MessageCreate, async (message) => {
 
   if (message.channel.type === ChannelType.GuildAnnouncement) return;
 
-  if (message.mentions.has(client.user)) {
+  const mention = message.mentions.has(client.user);
+  const everyoneMention = message.mentions.everyone;
+  const hereMention = message.mentions.roles.has(client.application.id);
+
+  if (mention && !everyoneMention && !hereMention) {
     const channelId = message.channel.id;
     const now = Date.now();
 
