@@ -26,7 +26,7 @@ module.exports = {
     const channel = interaction.options.getChannel('channel');
     const enabled = interaction.options.getBoolean('enabled');
 
-    // Find or create integration for this guild
+
     let data = await Integration.findOne({ guildId });
 
     if (data) {
@@ -44,7 +44,7 @@ module.exports = {
 
     await data.save();
 
-    // Your API base URL, adjust if not local
+
     const apiBaseUrl = process.env.API_BASE_URL || 'http://localhost:3000';
 
     const apiUrl = `${apiBaseUrl}/api/chat`;

@@ -42,7 +42,7 @@ module.exports = {
       return interaction.reply({ content: '❌ Failed to parse player data fields. Ensure it\'s valid JSON.', ephemeral: true });
     }
 
-    // Only Integration schema stores config info, no player data storage here
+
     let data = await Integration.findOne({ guildId });
     if (data) {
       data.channelId = channel?.id || null;
@@ -63,10 +63,10 @@ module.exports = {
     const apiBaseUrl = process.env.API_BASE_URL || 'http://localhost:3000';
     const playerDataEndpoint = `${apiBaseUrl}/api/playerdata`;
 
-    // Build Lua table for the fields to send from Roblox script
+
     const luaFields = Object.entries(parsedFields)
       .map(([key, value]) => {
-        // Wrap strings with quotes, leave numbers as-is
+
         if (typeof value === 'string' && !value.match(/^\d+(\.\d+)?$/)) {
           return `${key} = "${value}"`;
         }

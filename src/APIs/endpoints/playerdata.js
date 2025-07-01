@@ -43,7 +43,6 @@ module.exports = {
           .catch(console.error);
       }
 
-      // Return success response — no DB storage done here
       return res.status(200).json({ success: true });
 
     } catch (err) {
