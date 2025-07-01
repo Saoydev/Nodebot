@@ -20,6 +20,7 @@ module.exports = {
     const channel = interaction.options.getChannel('channel');
     const enabled = interaction.options.getBoolean('enabled');
 
+    // Find or create integration for this guild
     let data = await Integration.findOne({ guildId });
 
     if (data) {
@@ -37,19 +38,25 @@ module.exports = {
 
     await data.save();
 
-    const apiUrl = `https://local:3000/roblox/${data.token}`;
+    // Your API base URL, adjust if not local
+    const apiBaseUrl = process.env.API_BASE_URL || 'http://localhost:3000';
+
+    const apiUrl = `${apiBaseUrl}/api/chat`;
 
     const description = enabled
       ? `✅ The integration is **enabled**.
 
-**Paste this into your Roblox game:**
+**Paste this into your Roblox game script:**
+
 \`\`\`lua
 local HttpService = game:GetService("HttpService")
-local apiUrl = "${apiUrl}" -- Replace with your actual endpoint
+local apiUrl = "${apiUrl}" -- Your API endpoint
+local token = "${data.token}" -- Your integration token
 
 game.Players.PlayerAdded:Connect(function(player)
   player.Chatted:Connect(function(message)
     local data = HttpService:JSONEncode({
+      token = token,
       username = player.Name,
       message = message
     })
