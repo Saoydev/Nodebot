@@ -7,8 +7,6 @@ const client = new Client({
   partials: [Partials.Message, Partials.Channel, Partials.Reaction],
 });
 
-const premiumUsers = require('./premiumUsers.json');
-
 client.commands = new Collection();
 client.premium = new Collection();
 
