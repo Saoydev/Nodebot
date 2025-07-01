@@ -2,7 +2,7 @@ const { SlashCommandBuilder } = require('discord.js');
 const Integration = require('../../Schemas/Integration');
 const { v4: uuidv4 } = require('uuid');
 
-const testers = ["958904398636011540"]
+const testers = ["958904398636011540"];
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -12,11 +12,11 @@ module.exports = {
       option.setName('enabled')
         .setDescription('Enable or disable the player data integration')
         .setRequired(true))
-.addStringOption(option =>
-  option.setName('playerdatafields')
-    .setDescription('JSON string of fields, e.g. {"coins":"0","rank":"Bronze"}')
-    .setRequired(true)
-)
+    .addStringOption(option =>
+      option.setName('playerdatafields')
+        .setDescription('JSON string of fields, e.g. {"coins":"0","rank":"Bronze"}')
+        .setRequired(true)
+    )
     .addChannelOption(option =>
       option.setName('channel')
         .setDescription('The channel where data-related logs will appear')
@@ -90,6 +90,9 @@ end)
 
     const description = enabled
       ? `✅ The player data integration is **enabled**.
+
+⚠️ **WARNING:** Please only edit your player data fields through this bot command.  
+**Do NOT** change them directly in your Roblox game scripts, as this can cause conflicts and data issues.
 
 ## **Player Data Script**
 \`\`\`lua
