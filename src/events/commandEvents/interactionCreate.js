@@ -11,6 +11,20 @@ module.exports = {
         const command = client.commands.get(interaction.commandName);
 
         if (!command) return;
+
+if (command.premium === true) {
+  console.log('Checking premium for user:', interaction.user.id);
+  console.log('Premium users loaded:', [...client.premium.keys()]);
+
+  if (!client.premium.has(interaction.user.id)) {
+    console.log(`[Premium Check] User ${interaction.user.tag} tried to use premium command "${interaction.commandName}.js" without premium.`);
+    return interaction.reply({
+      content: '❌ You do not have access to this command. Please buy premium to use it.',
+      ephemeral: true
+    });
+  }
+}
+
         
         try{
             await command.execute(interaction, client);

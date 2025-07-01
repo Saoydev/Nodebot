@@ -21,6 +21,7 @@ module.exports = {
       option.setName('channel')
         .setDescription('The channel where data-related logs will appear')
         .setRequired(false)),
+  
   async execute(interaction) {
     if (!testers.includes(interaction.user.id)) {
       return interaction.reply({ content: '❌ You do not have permission to use this command.', ephemeral: true });
@@ -41,8 +42,8 @@ module.exports = {
       return interaction.reply({ content: '❌ Failed to parse player data fields. Ensure it\'s valid JSON.', ephemeral: true });
     }
 
+    // Only Integration schema stores config info, no player data storage here
     let data = await Integration.findOne({ guildId });
-
     if (data) {
       data.channelId = channel?.id || null;
       data.enabled = enabled;
@@ -57,14 +58,20 @@ module.exports = {
         playerDataFields: parsedFields
       });
     }
-
     await data.save();
 
     const apiBaseUrl = process.env.API_BASE_URL || 'http://localhost:3000';
     const playerDataEndpoint = `${apiBaseUrl}/api/playerdata`;
 
+    // Build Lua table for the fields to send from Roblox script
     const luaFields = Object.entries(parsedFields)
-      .map(([key, value]) => `${key} = ${value}`)
+      .map(([key, value]) => {
+        // Wrap strings with quotes, leave numbers as-is
+        if (typeof value === 'string' && !value.match(/^\d+(\.\d+)?$/)) {
+          return `${key} = "${value}"`;
+        }
+        return `${key} = ${value}`;
+      })
       .join(',\n    ');
 
     const luaScript = `
@@ -86,7 +93,7 @@ game.Players.PlayerAdded:Connect(function(player)
     HttpService:PostAsync(apiUrl, payload, Enum.HttpContentType.ApplicationJson)
   end)
 end)
-`;
+`.trim();
 
     const description = enabled
       ? `✅ The player data integration is **enabled**.
@@ -96,7 +103,7 @@ end)
 
 ## **Player Data Script**
 \`\`\`lua
-${luaScript.trim()}
+${luaScript}
 \`\`\`
 
 📌 **Setup Instructions:**

@@ -1,5 +1,4 @@
 const Integration = require('../../Schemas/Integration');
-const PlayerData = require('../../Schemas/PlayerData');
 const client = require('../../index');
 
 module.exports = {
@@ -16,18 +15,14 @@ module.exports = {
       if (!integration) return res.status(404).json({ error: 'Integration not found' });
       if (!integration.enabled) return res.status(403).json({ error: 'Integration is disabled' });
 
-      const allowedFields = integration.playerDataFields || [];
-      const invalidFields = Object.keys(data).filter(f => !allowedFields.includes(f));
+      // Validate keys strictly against playerDataFields object keys
+      const allowedFields = integration.playerDataFields || {};
+      const invalidFields = Object.keys(data).filter(f => !(f in allowedFields));
       if (invalidFields.length > 0) {
         return res.status(400).json({ error: 'Invalid fields sent', invalidFields });
       }
 
-      PlayerData.updateOne(
-        { guildId: integration.guildId, username },
-        { $set: { data } },
-        { upsert: true }
-      ).exec();
-
+      // Notify on Discord channel if available (logging only)
       if (integration.channelId && client?.channels) {
         client.channels.fetch(integration.channelId)
           .then(channel => {
@@ -48,6 +43,7 @@ module.exports = {
           .catch(console.error);
       }
 
+      // Return success response — no DB storage done here
       return res.status(200).json({ success: true });
 
     } catch (err) {

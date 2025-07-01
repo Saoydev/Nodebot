@@ -8,14 +8,14 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName('chatsetup')
     .setDescription('Setup Roblox chat integration')
-    .addChannelOption(option =>
-      option.setName('channel')
-        .setDescription('The channel where Roblox chat messages will appear')
-        .setRequired(true))
     .addBooleanOption(option =>
       option.setName('enabled')
         .setDescription('Enable or disable the integration')
-        .setRequired(true)),
+        .setRequired(true))
+    .addChannelOption(option =>
+      option.setName('channel')
+        .setDescription('The channel where Roblox chat messages will appear')
+        .setRequired(false)),
 
   async execute(interaction) {
     if (!testers.includes(interaction.user.id)) {

@@ -1,13 +1,81 @@
 const { Client, GatewayIntentBits, Collection, ChannelType, ActionRowBuilder, AuditLogOptionsType, Events, ButtonBuilder, Partials, ActivityType, EmbedBuilder, AuditLogEvent, messageLink, lazy, PermissionFlagsBits, PermissionsBitField, ButtonStyle } = require(`discord.js`);
 const fs = require('fs');
+const path = require('path');
 
 const client = new Client({
-  intents: [Object.keys(GatewayIntentBits)],
-  partials: [Object.keys(Partials)]
+  intents: Object.keys(GatewayIntentBits),
+  partials: [Partials.Message, Partials.Channel, Partials.Reaction],
 });
+
+const premiumUsers = require('./premiumUsers.json');
 
 client.commands = new Collection();
 client.premium = new Collection();
+
+const premiumPath = path.join(__dirname, 'premiumUsers.json');
+
+try {
+  const rawData = fs.readFileSync(premiumPath, 'utf-8');
+  const premiumUsers = JSON.parse(rawData);
+
+  if (Array.isArray(premiumUsers)) {
+    premiumUsers.forEach(id => client.premium.set(id, true));
+    console.log('Premium users loaded:', [...client.premium.keys()]);
+  } else {
+    console.warn('premiumUsers.json does not contain an array.');
+  }
+} catch (error) {
+  console.error('Failed to load premiumUsers.json:', error);
+}
+
+const TARGET_MESSAGE_ID = '1389595195217023016';  // target message ID
+const PREMIUM_ROLE_ID = '1388687595306877038';   // premium role ID
+const TARGET_EMOJI = '👑';
+
+client.on(Events.MessageReactionAdd, async (reaction, user) => {
+  if (user.bot) {
+    console.log(`Ignored reaction from bot user: ${user.tag}`);
+    return;
+  }
+
+  if (reaction.message.id !== TARGET_MESSAGE_ID) {
+    console.log(`Ignored reaction on unrelated message ID: ${reaction.message.id}`);
+    return;
+  }
+
+  const emojiMatch = reaction.emoji.id
+    ? reaction.emoji.id === TARGET_EMOJI
+    : reaction.emoji.name === TARGET_EMOJI;
+
+  if (!emojiMatch) {
+    console.log(`Ignored reaction with different emoji: ${reaction.emoji.name || reaction.emoji.id}`);
+    return;
+  }
+
+  const guild = reaction.message.guild;
+  if (!guild) {
+    console.log('Guild not found for the reaction message');
+    return;
+  }
+
+  try {
+    const member = await guild.members.fetch(user.id);
+
+    if (client.premium.has(user.id)) {
+      if (!member.roles.cache.has(PREMIUM_ROLE_ID)) {
+        await member.roles.add(PREMIUM_ROLE_ID);
+        console.log(`Role added to ${user.tag}`);
+      } else {
+        console.log(`User ${user.tag} already has the premium role`);
+      }
+    } else {
+      await reaction.users.remove(user.id);
+      console.log(`Reaction removed from ${user.tag} (not premium)`);
+    }
+  } catch (error) {
+    console.error('Error handling reaction add:', error);
+  }
+});
 
 require('dotenv').config();
 

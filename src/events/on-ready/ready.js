@@ -1,11 +1,15 @@
 const mongoose = require('mongoose');
 const mongodbURL = process.env.MONGOURL;
 const { ActivityType } = require('discord.js');
+const express = require('express');
+const app = express();
 
 module.exports = {
     name: 'ready',
     once: true,
     async execute(client) {
+
+        require('../../APIs/setup/load')(app);
         if (!mongodbURL) return;
 
         await mongoose.connect(mongodbURL || '', {
