@@ -2,9 +2,11 @@ const { SlashCommandBuilder } = require('discord.js');
 const Integration = require('../../Schemas/Integration');
 const { v4: uuidv4 } = require('uuid');
 
+const testers = ["958904398636011540"]
+
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('robloxsetup')
+    .setName('chatsetup')
     .setDescription('Setup Roblox chat integration')
     .addChannelOption(option =>
       option.setName('channel')
@@ -16,6 +18,10 @@ module.exports = {
         .setRequired(true)),
 
   async execute(interaction) {
+    if (!testers.includes(interaction.user.id)) {
+      return interaction.reply({ content: '❌ You do not have permission to use this command.', ephemeral: true });
+    }
+
     const guildId = interaction.guild.id;
     const channel = interaction.options.getChannel('channel');
     const enabled = interaction.options.getBoolean('enabled');

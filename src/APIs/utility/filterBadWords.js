@@ -1,4 +1,3 @@
-// ./src/APIs/utility/filterBadWords.js
 const bannedWords = require('../data/bannedWords.json');
 
 function normalizeText(text) {
