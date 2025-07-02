@@ -82,12 +82,7 @@ const interactionCreate = require('./events/commandEvents/interactionCreate');
 
 // notify when the bot is online and running
 client.on(Events.ClientReady, () => {
-  setInterval(function () {
-    client.user.setActivity(
-      `Nodebot | ${client.guilds.cache.size} Servers 🌷`,
-      { type: ActivityType.Custom }
-    );
-  }, 5000);
+  console.log('Nodebot is online and running!');
 });
 
 const cooldowns = new Map();
