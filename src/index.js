@@ -5,6 +5,9 @@ const path = require('path');
 const client = new Client({
   intents: Object.keys(GatewayIntentBits),
   partials: [Partials.Message, Partials.Channel, Partials.Reaction],
+  presence: {
+    status: 'online'
+  }
 });
 
 client.commands = new Collection();
@@ -79,6 +82,7 @@ require('dotenv').config();
 
 const process = require('node:process');
 const interactionCreate = require('./events/commandEvents/interactionCreate');
+const { watch } = require('node:fs');
 
 // notify when the bot is online and running
 client.on(Events.ClientReady, () => {
@@ -163,5 +167,15 @@ const commandFolders = fs.readdirSync("./src/commands");
   client.login(process.env.token)
 })();
 
+
 module.exports = client;
 require('./APIs/setup/main');
+
+const { startWatcher } = require('./handlers/watcher/main');
+const CHANNEL_ID = '1389492682602188851';
+
+
+client.once(Events.ClientReady, () => {
+  console.log('✅ Bot is ready!');
+  startWatcher(client, CHANNEL_ID);
+});

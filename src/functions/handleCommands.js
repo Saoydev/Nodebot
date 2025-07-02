@@ -4,7 +4,7 @@ const fs = require('fs');
 
 const clientId = '1387981655167336558';
 const guildId = '1313331197300179015';
-const errorLogChannelId = '1389492618962010233'; // Replace with your error log channel ID
+const errorLogChannelId = '1389492618962010233';
 module.exports = (client) => {
     client.handleCommands = async (commandFolders, path) => {
         client.commandArray = [];
